@@ -1,0 +1,4 @@
+Exercise
+Save the above program into a file. Run the file with node, and count how many words contain “e"s in a few different files.
+
+If you run into problems, ask for help.
