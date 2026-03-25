@@ -23,9 +23,9 @@ const path = argv[0];
 const char = program.opts().char;
 
 const content = await fs.readFile(path, "utf-8");
-const countOfWordsContainingEs = content
+const countOfWordsContainingChar = content
   .split(" ")
   .filter((word) => word.includes(char))
   .length;
 
-console.log(countOfWordsContainingEs);
+console.log(countOfWordsContainingChar);
