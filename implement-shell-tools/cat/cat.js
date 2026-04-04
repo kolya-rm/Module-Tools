@@ -7,6 +7,7 @@ program
   .name("concatenate-and-print-files-reproduction")
   .description("Print file content in the stdout.")
   .option("-n", "Number the output lines, starting at 1.")
+  .option("-b", "Number the non-blank output lines, starting at 1.")
   .argument("[path...]", "the file path to process");
 
 program.parse();
@@ -57,6 +58,13 @@ async function readAndPrintFiles() {
         if (options.n) {
           console.log(`${n.toString().padStart(6, " ")}  ${string}`);
           n++;
+        } else if (options.b) {
+          if (string) {
+            console.log(`${n.toString().padStart(6, " ")}  ${string}`);
+            n++;
+          } else {
+            console.log();
+          }
         } else {
           console.log(string);
         }
