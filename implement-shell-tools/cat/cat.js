@@ -2,6 +2,7 @@ import { program } from "commander";
 import { promises as fs } from "node:fs";
 import readline from "node:readline";
 import process from "node:process";
+import console from "node:console";
 
 program
   .name("concatenate-and-print-files-reproduction")
@@ -49,28 +50,7 @@ async function readAndPrintFiles() {
   for (const path of argv) {
     buffer.push(await readFile(path));
   }
-  for(const content of buffer) {
-    if (content[0].startsWith("cat.js:")) {
-      console.error(content[0]);
-    } else {
-      let n = 1; 
-      for(const string of content) {
-        if (options.n) {
-          console.log(`${n.toString().padStart(6, " ")}  ${string}`);
-          n++;
-        } else if (options.b) {
-          if (string) {
-            console.log(`${n.toString().padStart(6, " ")}  ${string}`);
-            n++;
-          } else {
-            console.log();
-          }
-        } else {
-          console.log(string);
-        }
-      }
-    }
-  }
+  printReadBuffer(buffer);
 }
 
 async function readFile(path) {
@@ -79,5 +59,45 @@ async function readFile(path) {
     return content.toString().trim().split("\n");
   } catch (error) {
     return [`cat.js: ${path}: No such file or directory`];
+  }
+}
+
+function printReadBuffer(buffer) {
+  for (const content of buffer) {
+    if (content[0].startsWith("cat.js:")) {
+      console.error(content[0]);
+    } else if (options.b) {
+      printWithFlagB(content);
+    } else if (options.n) {
+      printWithFlagN(content);
+    } else {
+      printWithoutFlag(content);
+    }
+  }
+}
+
+function printWithFlagB(content) {
+  let n = 1;
+  for (const string of content) {
+    if (string) {
+      console.log(`${n.toString().padStart(6, " ")}  ${string}`);
+      n++;
+    } else {
+      console.log();
+    }
+  }
+}
+
+function printWithFlagN(content) {
+  let n = 1;
+  for (const string of content) {
+    console.log(`${n.toString().padStart(6, " ")}  ${string}`);
+    n++;
+  }
+}
+
+function printWithoutFlag(content) {
+  for (const string of content) {
+    console.log(string);
   }
 }
