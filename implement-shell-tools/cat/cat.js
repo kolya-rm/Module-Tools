@@ -1,27 +1,36 @@
 import { program } from "commander";
 import { promises as fs } from "node:fs";
-import { constants } from "node:fs";
-import process from "node:process";
 
 program
   .name("concatenate-and-print-files-reproduction")
   .description("Print file content in the stdout.")
-  .argument("<path>, the file path to process");
+  .argument("<path...>", "the file path to process");
 
 program.parse();
 
 const argv = program.args;
 
-printFile(argv[0]);
+readAndPrintFiles();
 
-function printFile(path) {
-  fs.access(path, constants.R_OK).then(() => {
-    fs.readFile(path, "utf8").then( data => {
-      console.log(data.toString().trim());
-    }).catch(error => {
-      console.error(`cat.js: ${path}: ${error}}`);
-    })
-  }).catch(() => {
-    console.error(`cat.js: ${path}: No such file or directory`);
-  })
+async function readAndPrintFiles() {
+  const buffer = [];
+  for (const path of argv) {
+    buffer.push(await readFile(path));
+  }
+  for(const content of buffer) {
+    if (content.startsWith("cat.js:")) {
+      console.error(content);
+    } else { 
+      console.log(content);
+    }
+  }
+}
+
+async function readFile(path) {
+  try {
+    const content = await fs.readFile(path, "utf8");
+    return content.toString().trim();
+  } catch (error) {
+    return `cat.js: ${path}: No such file or directory`;
+  }
 }
