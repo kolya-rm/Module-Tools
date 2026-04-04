@@ -1,16 +1,43 @@
 import { program } from "commander";
 import { promises as fs } from "node:fs";
+import readline from "node:readline";
+import process from "node:process";
 
 program
   .name("concatenate-and-print-files-reproduction")
   .description("Print file content in the stdout.")
-  .argument("<path...>", "the file path to process");
+  .argument("[path...]", "the file path to process");
 
 program.parse();
 
 const argv = program.args;
 
-readAndPrintFiles();
+let rl;
+
+start();
+
+function start() {
+  if (argv.length === 0) {
+    rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+    recursiveReadlineAndPrint();
+  } else {
+    readAndPrintFiles();
+  }
+}
+
+function recursiveReadlineAndPrint() {
+  rl.on("SIGINT", () => {
+    rl.close();
+    process.exit(0);
+  }); 
+  rl.question("", input => {
+    console.log(input);
+    recursiveReadlineAndPrint();
+  });
+}
 
 async function readAndPrintFiles() {
   const buffer = [];
