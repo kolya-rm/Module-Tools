@@ -2,6 +2,7 @@ import { program } from "commander";
 import { promises as fs} from "node:fs"
 
 const TERMINAL_WIDTH = 120;
+const NAME_PADDING = 8;
 
 program
   .name("list")
@@ -20,6 +21,8 @@ async function start() {
   const directories = [];
   
   await checkInput(output, files, directories);
+
+  output.push(formatFilesOutput(files));
 
   console.log("output:", output);
   console.log("files:", files);
@@ -46,6 +49,32 @@ async function checkInput(output, files, directories) {
   }
   files.sort();
   directories.sort();
+}
+
+function formatFilesOutput(files) {
+  let maxLength = 0;
+  for (const name of files) {
+    if (maxLength < name.length) {
+      maxLength = name.length;
+    }
+  }
+
+  let padLength = 0;
+  while (padLength < maxLength) {
+    padLength += NAME_PADDING;
+  }
+
+  let output = "";
+  let lineLength = 0;
+  for (const name of files) {
+    output += name.padEnd(padLength, " ");
+    lineLength += padLength;
+    if (TERMINAL_WIDTH - lineLength < padLength) {
+      output += "\n";
+      lineLength = 0;
+    }
+  }
+  return output;
 }
 
 async function readDirAndPrintFiles() {
