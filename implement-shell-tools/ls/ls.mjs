@@ -6,13 +6,47 @@ const TERMINAL_WIDTH = 120;
 program
   .name("list")
   .description("list directory contents")
-  .argument("[path]", "path to file", ["."]);
+  .argument("[path...]", "path to file");
 
 program.parse()
 
 const argv = program.args;
 
-readDirAndPrintFiles();
+start();
+
+async function start() {
+  const output = [];
+  const files = [];
+  const directories = [];
+  
+  await checkInput(output, files, directories);
+
+  console.log("output:", output);
+  console.log("files:", files);
+  console.log("directories:", directories);
+}
+
+async function checkInput(output, files, directories) {
+  if (!argv.length) {
+    directories.push(".");
+    return;
+  }
+  for (const path of argv) {
+    try {
+      const stat = await fs.stat(path);
+      if (stat.isFile()) {
+        files.push(path);
+      }
+      if (stat.isDirectory()) {
+        directories.push(path);
+      }
+    } catch (error) {
+      output.push(`ls.mjs:  ${path}: No such file ore directory`);
+    }
+  }
+  files.sort();
+  directories.sort();
+}
 
 async function readDirAndPrintFiles() {
   let path = argv[0] ? argv[0] : ".";
