@@ -21,12 +21,18 @@ async function start() {
   const directories = [];
   
   await checkInput(output, files, directories);
+  if (files.length) {
+    output.push(formatFilesOutput(files));
+  }
+  await formatDirectoriesOutput(output, directories, files.length);
 
-  output.push(formatFilesOutput(files));
-
-  console.log("output:", output);
-  console.log("files:", files);
-  console.log("directories:", directories);
+  for(const string of output) {
+    if (string.startsWith("ls.mjs")) {
+      console.error(string);
+    } else {
+      console.log(string);
+    }
+  }
 }
 
 async function checkInput(output, files, directories) {
@@ -77,34 +83,17 @@ function formatFilesOutput(files) {
   return output;
 }
 
-async function readDirAndPrintFiles() {
-  let path = argv[0] ? argv[0] : ".";
-
-  const rawFiles = await fs.readdir(path);
-  const files = rawFiles.filter(file => !file.startsWith("."));
-
-  let maxLength = 0;
-  for (const name of files) {
-    if (maxLength < name.length) {
-      maxLength = name.length;
+async function formatDirectoriesOutput(output, directories, isFilesExist) {
+  const isSingleDirectory = directories.length === 1;
+  for(let i = 0; i < directories.length; i++) {
+    let files = await fs.readdir(directories[i]);
+    let directoryOutput = formatFilesOutput(files);
+    if (isFilesExist || !isSingleDirectory) {
+      directoryOutput = `${directories[i]}:\n${directoryOutput}`;
     }
-  }
-
-  let padLength = 0;
-  while (padLength < maxLength) {
-    padLength +=8;
-  }
-
-  let output = "";
-  let lineLength = 0;
-  for (const name of files) {
-    output += name.padEnd(padLength, " ");
-    lineLength += padLength;
-    if (TERMINAL_WIDTH - padLength < lineLength) {
-      output += "\n";
-      lineLength = 0;
+    if (isFilesExist || !isSingleDirectory && i) {
+      directoryOutput = `\n${directoryOutput}`;
     }
+    output.push(directoryOutput);
   }
-
-  console.log(output)
 }
