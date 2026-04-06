@@ -8,6 +8,7 @@ program
   .name("list")
   .description("list directory contents")
   .option("-a", "Include directory entries whose names begin with a dot (‘.’).")
+  .option("-1", "(The numeric digit “one”.) Force output to be one entry per line.")
   .argument("[path...]", "path to entries to list");
 
 program.parse()
@@ -60,6 +61,9 @@ async function checkInput(output, files, directories) {
 }
 
 function formatFilesOutput(files) {
+  if (options[1]) {
+    return files.join("\n");
+  }
   let maxLength = 0;
   for (const name of files) {
     if (maxLength < name.length) {
