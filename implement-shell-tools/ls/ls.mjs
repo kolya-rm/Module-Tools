@@ -7,11 +7,13 @@ const NAME_PADDING = 8;
 program
   .name("list")
   .description("list directory contents")
-  .argument("[path...]", "path to file");
+  .option("-a", "Include directory entries whose names begin with a dot (‘.’).")
+  .argument("[path...]", "path to entries to list");
 
 program.parse()
 
 const argv = program.args;
+const options = program.opts();
 
 start();
 
@@ -87,6 +89,12 @@ async function formatDirectoriesOutput(output, directories, isFilesExist) {
   const isSingleDirectory = directories.length === 1;
   for(let i = 0; i < directories.length; i++) {
     let files = await fs.readdir(directories[i]);
+    if (options.a) {
+      files.push(".", "..");
+    } else {
+      files = files.filter(file => !file.startsWith("."));
+    }
+    files.sort();
     let directoryOutput = formatFilesOutput(files);
     if (isFilesExist || !isSingleDirectory) {
       directoryOutput = `${directories[i]}:\n${directoryOutput}`;
