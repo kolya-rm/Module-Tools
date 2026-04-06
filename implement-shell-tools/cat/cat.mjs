@@ -1,8 +1,6 @@
 import { program } from "commander";
 import { promises as fs } from "node:fs";
 import readline from "node:readline";
-import process from "node:process";
-import console from "node:console";
 
 program
   .name("concatenate-and-print-files-reproduction")
@@ -21,8 +19,6 @@ let rl;
 start();
 
 function start() {
-  console.log(options.n);
-
   if (argv.length === 0) {
     rl = readline.createInterface({
       input: process.stdin,
