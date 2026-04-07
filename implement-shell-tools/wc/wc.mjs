@@ -1,4 +1,4 @@
-import { promises as fs, readFile } from "node:fs";
+import { promises as fs } from "node:fs";
 import { program } from "commander";
 
 
@@ -31,38 +31,61 @@ async function start() {
 }
 
 async function collectData() {
-  if (!argv.length) {
-    return [];
-  }
-
   const data = [];
-  for (const path of argv) {
-    const datum = {};
-    try {
-      const stat = await fs.stat(path)
-      if (stat.isDirectory()) {
-        datum["s"] = "d";
-      }
-      if (stat.isFile()) {
-        datum["s"] = "f";
-        const content = (await fs.readFile(path)).toString();
-        datum["l"] = content.match(/\n/g).length;
-        datum["w"] = content.match(/\s/g).length;
-        datum["c"] = content.length;
-      }
-    } catch (error) {
-      datum["s"] = "e";
-    }
-    datum["p"] = path;
-    data.push(datum);
-  }
 
+  if (!argv.length) {
+    const content = await getStdinContent();
+    data.push(collectFileData({}, content));
+  } else {
+    for (const path of argv) {
+      const datum = {};
+      try {
+        const stat = await fs.stat(path)
+        if (stat.isDirectory()) {
+          datum["s"] = "d";
+        }
+        if (stat.isFile()) {
+          const content = (await fs.readFile(path)).toString();
+          collectFileData(datum, content);
+        }
+      } catch (error) {
+        datum["s"] = "e";
+      }
+      datum["p"] = path;
+      data.push(datum);
+    }
+  }
   return data;
+}
+
+async function getStdinContent() {
+  return new Promise((resolve) => {
+    let content = "";
+
+    process.stdin.on("data", input => {
+      content += input;
+    });
+    process.stdin.on("close", () => {
+      resolve(content);
+    });
+  });
+}
+
+function collectFileData(datum, content) {
+  const newLineCharacters = content.match(/\n/g);
+
+  datum["s"] = "f";
+  datum["l"] = newLineCharacters ? newLineCharacters.length : 0;
+  datum["w"] = content.trim().split(/\s+/).length;
+  datum["c"] = content.length;
+
+  return datum;
 }
 
 function formatOutput(data) {
   const errors = [];
   const files = [];
+
   for(const datum of data) {
     switch(datum.s) {
       case "d":
@@ -101,18 +124,24 @@ function formatFileOutput(datum) {
     }
   }
 
-  return `${result} ${datum.p}`;
+  if (datum.p) {
+    result = `${result} ${datum.p}`;
+  }
+
+  return result;
 }
 
 function formatTotalOutput(data) {
   const total = {s: "t", l: 0, w: 0, c: 0, p: TOTAL_PATH};
+
   for (const datum of data) {
     if (datum.s === "f") {
-      total.l +=datum.l;
+      total.l += datum.l;
       total.w += datum.w;
       total.c += datum.c;
     }
   }
+  
   return formatFileOutput(total);
 }
 
