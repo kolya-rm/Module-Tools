@@ -1,6 +1,9 @@
 import { promises as fs, readFile } from "node:fs";
 import { program } from "commander";
 
+const NUMBER_PADDING = 8;
+const ERROR_PREFIX = "wc.mjs:"
+
 program
   .name("word-count")
   .description("word, line, and character count")
@@ -15,7 +18,8 @@ start();
 
 async function start() {
   const data = await collectData();
-  console.log(data);
+  const output = formatOutput(data);
+  printOutput(output);
 }
 
 async function collectData() {
@@ -40,7 +44,45 @@ async function collectData() {
     } catch (error) {
       datum["s"] = "e";
     }
+    datum["p"] = path;
     data.push(datum);
   }
   return data;
+}
+
+function formatOutput(data) {
+  const errors = [];
+  const files = [];
+  for(const datum of data) {
+    switch(datum.s) {
+      case "d":
+        errors.push(`${ERROR_PREFIX} ${datum.p}: Is a directory`);
+        break;
+      case "f":
+        files.push(formatFileOutput(datum));
+        break;
+      default:
+        errors.push(`${ERROR_PREFIX} ${datum.p}: open: No such file or directory`);
+        break;
+    }
+  }
+  return errors.concat(files);
+}
+
+function formatFileOutput(datum) {
+  return `${formatOutputNumber(datum.l)}${formatOutputNumber(datum.w)}${formatOutputNumber(datum.c)} ${datum.p}`;
+}
+
+function formatOutputNumber(number) {
+  return number.toString().padStart(NUMBER_PADDING, " ");
+}
+
+function printOutput(output) {
+  for (const string of output) {
+    if (string.startsWith(ERROR_PREFIX)) {
+      console.error(string);
+    } else {
+      console.log(string);
+    }
+  }
 }
