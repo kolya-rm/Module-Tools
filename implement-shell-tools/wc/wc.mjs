@@ -1,8 +1,11 @@
 import { promises as fs, readFile } from "node:fs";
 import { program } from "commander";
 
+
 const NUMBER_PADDING = 8;
 const ERROR_PREFIX = "wc.mjs:"
+const TOTAL_PATH = "total";
+
 
 program
   .name("word-count")
@@ -14,11 +17,13 @@ program.parse();
 const argv = program.args;
 const options = program.opts();
 
+
 start();
 
 async function start() {
   const data = await collectData();
   const output = formatOutput(data);
+
   printOutput(output);
 }
 
@@ -26,6 +31,7 @@ async function collectData() {
   if (!argv.length) {
     return [];
   }
+
   const data = [];
   for (const path of argv) {
     const datum = {};
@@ -47,6 +53,7 @@ async function collectData() {
     datum["p"] = path;
     data.push(datum);
   }
+
   return data;
 }
 
@@ -66,11 +73,28 @@ function formatOutput(data) {
         break;
     }
   }
+  
+  if (data.length > 1) {
+    files.push(formatTotalOutput(data));
+  }
+  
   return errors.concat(files);
 }
 
 function formatFileOutput(datum) {
   return `${formatOutputNumber(datum.l)}${formatOutputNumber(datum.w)}${formatOutputNumber(datum.c)} ${datum.p}`;
+}
+
+function formatTotalOutput(data) {
+  const total = {s: "t", l: 0, w: 0, c: 0, p: TOTAL_PATH};
+  for (const datum of data) {
+    if (datum.s === "f") {
+      total.l +=datum.l;
+      total.w += datum.w;
+      total.c += datum.c;
+    }
+  }
+  return formatFileOutput(total);
 }
 
 function formatOutputNumber(number) {
