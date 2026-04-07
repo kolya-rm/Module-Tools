@@ -10,6 +10,9 @@ const TOTAL_PATH = "total";
 program
   .name("word-count")
   .description("word, line, and character count")
+  .option("-l", "The number of lines in each input file is written to the standard output.")
+  .option("-w", "The number of words in each input file is written to the standard output.")
+  .option("-c", "The number of characters in each input file is written to the standard output.")
   .argument("[path...]", "path to file.");
 
 program.parse();
@@ -82,7 +85,23 @@ function formatOutput(data) {
 }
 
 function formatFileOutput(datum) {
-  return `${formatOutputNumber(datum.l)}${formatOutputNumber(datum.w)}${formatOutputNumber(datum.c)} ${datum.p}`;
+  let result = "";
+  
+  if (!options.l && !options.w && !options.c) {
+    result = `${formatOutputNumber(datum.l)}${formatOutputNumber(datum.w)}${formatOutputNumber(datum.c)}`;
+  } else {
+    if (options.l) {
+      result = `${result}${formatOutputNumber(datum.l)}`;
+    }
+    if (options.w) {
+      result = `${result}${formatOutputNumber(datum.w)}`;
+    }
+    if (options.c) {
+      result = `${result}${formatOutputNumber(datum.c)}`;
+    }
+  }
+
+  return `${result} ${datum.p}`;
 }
 
 function formatTotalOutput(data) {
