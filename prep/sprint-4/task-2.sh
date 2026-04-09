@@ -1,0 +1,1 @@
+jq -r ".[. | length - 1].name" ./scores.json
