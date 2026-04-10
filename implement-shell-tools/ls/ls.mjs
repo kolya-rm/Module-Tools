@@ -103,7 +103,7 @@ async function formatDirectoriesOutput(output, directories, isFilesExist) {
     if (isFilesExist || !isSingleDirectory) {
       directoryOutput = `${directories[i]}:\n${directoryOutput}`;
     }
-    if (isFilesExist || !isSingleDirectory && i) {
+    if (isFilesExist ||  (!isSingleDirectory && i)) {
       directoryOutput = `\n${directoryOutput}`;
     }
     output.push(directoryOutput);
