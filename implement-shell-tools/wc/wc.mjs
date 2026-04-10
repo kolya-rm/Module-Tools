@@ -73,10 +73,11 @@ async function getStdinContent() {
 
 function collectFileData(datum, content) {
   const newLineCharacters = content.match(/\n/g);
+  const trimmedContent = content.trim();
 
   datum["s"] = "f";
   datum["l"] = newLineCharacters ? newLineCharacters.length : 0;
-  datum["w"] = content.trim().split(/\s+/).length;
+  datum["w"] = trimmedContent ? trimmedContent.split(/\s+/).length : 0;
   datum["c"] = content.length;
 
   return datum;
