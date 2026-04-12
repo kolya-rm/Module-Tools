@@ -8,11 +8,14 @@ parser = argparse.ArgumentParser(
 )
 
 parser.add_argument("path", help = "The file to read and print", nargs = "+")
+parser.add_argument("-b", action = "store_true", help = "Number the non-blank output lines, starting at 1.")
+parser.add_argument("-n", action = "store_true", help = "Number the output lines, starting at 1.")
 
 args = parser.parse_args()
 
 
 def readAndPrintFile():
+  print(args.path)
   buffer = []
   for path in args.path:
     buffer.append(readFile(path))
@@ -31,10 +34,32 @@ def printBuffer(buffer):
     printContent(fileContent)
 
 def printContent(fileContent):
+  if fileContent[0].startswith("cat.py:"):
+      print(fileContent[0], file = sys.stderr)
+  elif (args.b):
+    printWithFlagB(fileContent)
+  elif(args.n):
+    printWithFlagN(fileContent)
+  else:
+    printWithoutFlags(fileContent)
+
+def printWithFlagB(fileContent):
+  n = 1
   for string in fileContent:
-    if string.startswith("cat.py:"):
-      print(string, file = sys.stderr)
-    else:
+    if (not string):
       print(string)
+    else:
+      print(str(n).rjust(6) + " " + string)
+      n += 1
+
+def printWithFlagN(fileContent):
+  n = 1
+  for string in fileContent:
+    print(str(n).rjust(6) + " " + string)
+    n += 1
+
+def printWithoutFlags(fileContent):
+  for string in fileContent:
+    print(string)
 
 readAndPrintFile()
