@@ -20,7 +20,7 @@ args = parser.parse_args()
 def start():
   data = collectData()
   output = formatOutput(data)
-  print(output)
+  printOutput(output)
 
 def collectData():
   data = []
@@ -86,5 +86,12 @@ def formatTotalOutput(data):
 
 def formatOutputNumber(number):
   return str(number).rjust(NUMBER_PADDING)
+
+def printOutput(output):
+  for string in output:
+    if (string.startswith(ERROR_PREFIX)):
+      print(string, file = sys.stderr)
+    else:
+      print(string)
 
 start()
