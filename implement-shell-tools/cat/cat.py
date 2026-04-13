@@ -1,4 +1,5 @@
 import sys
+import os
 import argparse
 
 
@@ -33,12 +34,14 @@ def readAndPrintFile():
   printBuffer(buffer)
 
 def readFile(path):
-  try:
+  if os.path.isdir(path):
+    return [f"cat.py: {path}: Is directory"]
+  elif os.path.isfile(path):
     with open(path, "r") as file:
       content = file.read()
     return content.strip().split("\n")
-  except:
-    return  [f"cat.py: {path}: No such file or directory"]
+  else:
+    return [f"cat.py: {path}: No such file or directory"]
   
 def printBuffer(buffer):
   for fileContent in buffer:
