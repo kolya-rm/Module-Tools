@@ -11,7 +11,7 @@ parser = argparse.ArgumentParser(
     "as well as any requested, associated information."
 )
 
-parser.add_argument("path", help = "path to entries to list", nargs = "+")
+parser.add_argument("path", help = "path to entries to list", nargs = "*")
 parser.add_argument("-a", action = "store_true", help = "Include directory entries whose names begin with a dot (‘.’).")
 parser.add_argument("-1", action = "store_true", help = "(The numeric digit “one”.) Force output to be one entry per line.")
 args = parser.parse_args()
@@ -22,8 +22,6 @@ def start():
   files = []
   directories = []
 
-  print()
-
   checkInput(output, files, directories)
   if (len(files)):
     output.append(formatFilesOutput(files))
@@ -31,6 +29,10 @@ def start():
   printOutput(output)
 
 def checkInput(output, files, directories):
+  if (not len(args.path)):
+    directories.append(".")
+    return
+  
   for path in args.path:
     if (os.path.isdir(path)):
       directories.append(path)
@@ -78,7 +80,7 @@ def formatDirectoriesOutput(output, directories, isFilesExist):
     directoryOutput = formatFilesOutput(files)
     if (isFilesExist or not isSingleDirectory):
       directoryOutput = f"{directories[i]}:\n{directoryOutput}"
-    if (isFilesExist or (not isSingleDirectory and i > 0)):
+    if (isFilesExist or (not isSingleDirectory and i)):
       directoryOutput = f"\n{directoryOutput}"
     
     output.append(directoryOutput)
