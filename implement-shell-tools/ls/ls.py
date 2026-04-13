@@ -1,6 +1,8 @@
 import os
 import argparse
 
+TERMINAL_LENGTH = 120
+
 parser = argparse.ArgumentParser(
   prog = "list-directory-content",
   description = "For each operand that names a file of a type other than directory, ls displays its name as well as any requested, associated" \
@@ -19,9 +21,10 @@ def start():
 
   checkInput(output, files, directories)
 
+  if (len(files)):
+    output.append(formatFilesOutput(files))
+
   print(output)
-  print(files)
-  print(directories)
 
 def checkInput(output, files, directories):
   for path in args.path:
@@ -34,5 +37,26 @@ def checkInput(output, files, directories):
 
   files.sort()
   directories.sort()
+
+def formatFilesOutput(files):
+  maxLength = 0
+  for name in files:
+    if (maxLength < len(name)):
+      maxLength = len(name)
+  
+  padLength = 0
+  while (padLength < maxLength):
+    padLength += 8
+
+  output = ""
+  lineLength = 0
+  for name in files:
+    output += name.ljust(padLength)
+    lineLength += padLength
+    if (TERMINAL_LENGTH - lineLength < padLength):
+      output += "\n"
+      lineLength = 0
+  
+  return output
 
 start()
