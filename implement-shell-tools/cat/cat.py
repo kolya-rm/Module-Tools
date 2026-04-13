@@ -7,15 +7,26 @@ parser = argparse.ArgumentParser(
   description = "The cat utility reads files sequentially, writing them to the standard output."
 )
 
-parser.add_argument("path", help = "The file to read and print", nargs = "+")
+parser.add_argument("path", help = "The file to read and print", nargs = "*")
 parser.add_argument("-b", action = "store_true", help = "Number the non-blank output lines, starting at 1.")
 parser.add_argument("-n", action = "store_true", help = "Number the output lines, starting at 1.")
 
 args = parser.parse_args()
 
+def start():
+  if (args.path):
+    readAndPrintFile()
+  else:
+    try:
+      while (True):
+        string = input()
+        print(string)
+    except EOFError:
+      pass
+    except KeyboardInterrupt:
+      pass
 
 def readAndPrintFile():
-  print(args.path)
   buffer = []
   for path in args.path:
     buffer.append(readFile(path))
@@ -27,7 +38,7 @@ def readFile(path):
       content = file.read()
     return content.strip().split("\n")
   except:
-    return  ["cat.py: " + path + ": No such file or directory"]
+    return  [f"cat.py: {path}: No such file or directory"]
   
 def printBuffer(buffer):
   for fileContent in buffer:
@@ -62,4 +73,4 @@ def printWithoutFlags(fileContent):
   for string in fileContent:
     print(string)
 
-readAndPrintFile()
+start()
