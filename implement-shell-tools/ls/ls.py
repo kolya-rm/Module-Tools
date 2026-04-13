@@ -1,4 +1,5 @@
 import os
+import sys
 import argparse
 
 TERMINAL_LENGTH = 120
@@ -24,7 +25,7 @@ def start():
   if (len(files)):
     output.append(formatFilesOutput(files))
 
-  print(output)
+  printOutput(output)
 
 def checkInput(output, files, directories):
   for path in args.path:
@@ -58,5 +59,12 @@ def formatFilesOutput(files):
       lineLength = 0
   
   return output
+
+def printOutput(output):
+  for string in output:
+    if (string.startswith("ls.py:")):
+      print(string, file = sys.stderr)
+    else:
+      print(string)
 
 start()
