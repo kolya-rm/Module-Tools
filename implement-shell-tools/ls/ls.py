@@ -12,6 +12,7 @@ parser = argparse.ArgumentParser(
 )
 
 parser.add_argument("path", help = "path to entries to list", nargs = "+")
+parser.add_argument("-a", action = "store_true", help="Include directory entries whose names begin with a dot (‘.’).")
 args = parser.parse_args()
 
 
@@ -63,6 +64,10 @@ def formatDirectoriesOutput(output, directories, isFilesExist):
   isSingleDirectory = len(directories) == 1
   for i in range(0, len(directories)):
     files = os.listdir(directories[i])
+    if (args.a):
+      files +=[".",".."]
+    else:
+      files = [file for file in files if not file.startswith(".")]
     files.sort()
 
     directoryOutput = formatFilesOutput(files)
@@ -79,5 +84,6 @@ def printOutput(output):
       print(string, file = sys.stderr)
     else:
       print(string)
+
 
 start()
