@@ -12,7 +12,10 @@ parser = argparse.ArgumentParser(
   description = "word, line, and character count"
 )
 
-parser.add_argument("path", help = "", nargs = "+")
+parser.add_argument("path", help = "path to file.", nargs = "+")
+parser.add_argument("-l", action = "store_true", help = "The number of lines in each input file is written to the standard output.")
+parser.add_argument("-w", action = "store_true", help = "The number of words in each input file is written to the standard output.")
+parser.add_argument("-c", action = "store_true", help = "The number of characters in each input file is written to the standard output.")
 
 args = parser.parse_args()
 
@@ -66,8 +69,17 @@ def formatOutput(data):
   return errors + files
 
 def formatFileOutput(datum):
-  result = f"{formatOutputNumber(datum['l'])}{formatOutputNumber(datum['w'])}{formatOutputNumber(datum['c'])}"
-
+  result = ""
+  if (not args.l and not args.w and not args.c):
+    result = f"{formatOutputNumber(datum['l'])}{formatOutputNumber(datum['w'])}{formatOutputNumber(datum['c'])}"
+  else:
+    if (args.l):
+      result = f"{result}{formatOutputNumber(datum['l'])}"
+    if (args.w):
+      result = f"{result}{formatOutputNumber(datum['w'])}"
+    if (args.c):
+      result = f"{result}{formatOutputNumber(datum['c'])}"
+      
   if (datum["p"]):
     result = f"{result} {datum['p']}"
   
