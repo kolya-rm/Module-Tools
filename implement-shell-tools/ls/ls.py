@@ -21,10 +21,9 @@ def start():
   directories = []
 
   checkInput(output, files, directories)
-
   if (len(files)):
     output.append(formatFilesOutput(files))
-
+  formatDirectoriesOutput(output, directories, len(files))
   printOutput(output)
 
 def checkInput(output, files, directories):
@@ -59,6 +58,20 @@ def formatFilesOutput(files):
       lineLength = 0
   
   return output
+
+def formatDirectoriesOutput(output, directories, isFilesExist):
+  isSingleDirectory = len(directories) == 1
+  for i in range(0, len(directories)):
+    files = os.listdir(directories[i])
+    files.sort()
+
+    directoryOutput = formatFilesOutput(files)
+    if (isFilesExist or not isSingleDirectory):
+      directoryOutput = f"{directories[i]}:\n{directoryOutput}"
+    if (isFilesExist or (not isSingleDirectory and i)):
+      directoryOutput = f"\n{directoryOutput}"
+    
+    output.append(directoryOutput)
 
 def printOutput(output):
   for string in output:
