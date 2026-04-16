@@ -12,11 +12,11 @@ class Person:
       years -= 1 
     return years >= 18
 
-imran = Person("Imran", 22 , "Ubuntu")
+imran = Person("Imran", date(2000, 10, 12) , "Ubuntu")
 print(imran.name)
 print(imran.address)
 
-eliza = Person("Eliza", 34, "Arch linux")
+eliza = Person("Eliza", date(1992, 5, 17), "Arch linux")
 print(eliza.name)
 print(eliza.address)
 
