@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import List
+import sys
+
 
 class OperatingSystem(Enum):
   MACOS = "MacOS"
@@ -29,8 +30,16 @@ laptops = [
 ]
 
 name = input("Input name: ")
-age = int(input("Input age: "))
-os = OperatingSystem(input("Input operating system: "))
+try:
+  age = int(input("Input age: "))
+except:
+  print("Input wrong age value.", file=sys.stderr)
+  sys.exit(1)
+try:
+  os = OperatingSystem(input("Input operating system: "))
+except:
+  print("Input wrong operations system value.", file=sys.stderr)
+  sys.exit(1)
 
 person = Person(name, age, os)
 
