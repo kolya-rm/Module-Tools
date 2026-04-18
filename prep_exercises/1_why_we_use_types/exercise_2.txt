@@ -1,0 +1,2 @@
+There is a contradiction between the name of of the function and it´s logic. The function is named
+double, but returns the tripled value of the function argument. 
