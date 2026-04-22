@@ -23,8 +23,6 @@ elif animal == "cheese":
   cowsay.cheese(message)
 elif animal == "daemon":
   cowsay.daemon(message)
-elif animal == "daemon":
-  cowsay.daemon(message)
 elif animal == "fox":
   cowsay.fox(message)
 elif animal == "ghostbusters":
