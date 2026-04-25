@@ -1,0 +1,9 @@
+1. Class methods keeps function near the other class code. We don't need to looking for it in
+other location when we decide to change it.
+
+We can describe methods in a class and then call it from objects of this class. To use them
+we just need to know class interface.
+
+If we have to change implementation of class methods we can do it without touching other code
+just in the one place.
+ 

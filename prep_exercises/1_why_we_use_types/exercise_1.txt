@@ -1,0 +1,2 @@
+Function call double("22") will return "2222". Because in python "string" * n returns the 
+"string" repeated n times.
